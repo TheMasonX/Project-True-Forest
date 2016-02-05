@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{2D570250-2C1E-AE72-C6F8-5C0A1E9CE0D7}") = "Forest Simulator", "Assembly-CSharp.csproj", "{D3BECDAF-D1D6-1FF7-BD56-EE66F9D62D17}"
+EndProject
+Project("{2D570250-2C1E-AE72-C6F8-5C0A1E9CE0D7}") = "Forest Simulator", "Assembly-CSharp-Editor.csproj", "{9120A293-774A-9474-EDB4-2998CF1658E3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3BECDAF-D1D6-1FF7-BD56-EE66F9D62D17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3BECDAF-D1D6-1FF7-BD56-EE66F9D62D17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3BECDAF-D1D6-1FF7-BD56-EE66F9D62D17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3BECDAF-D1D6-1FF7-BD56-EE66F9D62D17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9120A293-774A-9474-EDB4-2998CF1658E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9120A293-774A-9474-EDB4-2998CF1658E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9120A293-774A-9474-EDB4-2998CF1658E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9120A293-774A-9474-EDB4-2998CF1658E3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal

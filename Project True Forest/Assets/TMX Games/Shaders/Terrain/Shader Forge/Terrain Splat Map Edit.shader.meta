@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ce0a2fb498f28b744812a6cb466a211a
+timeCreated: 1453927488
+licenseType: Free
+ShaderImporter:
+  defaultTextures:
+  - _LowGrassDiffuse: {fileID: 2800000, guid: 4166611f5efcb604994dd706e715f396, type: 3}
+  - _RockDiffuse: {fileID: 2800000, guid: 24b825f299d3a934fa4a7ff70c2f04bf, type: 3}
+  - _StrataGradient: {fileID: 2800000, guid: 907a460eb7f17684ca64ef64cec2197d, type: 3}
+  - _DiffuseNoise: {fileID: 2800000, guid: b8ea00fcfa6ae004d84e7621154550da, type: 3}
+  - _HighGrassDiffuse: {fileID: 2800000, guid: 6cb300711d3ad324283b58a4a3a6ed9e, type: 3}
+  - _SplatMap: {fileID: 2800000, guid: a4a297868888ae043b48e325c6b575da, type: 3}
+  - _NoiseNormal: {fileID: 2800000, guid: da8b7819c728ca145bb3b1c5710936f6, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

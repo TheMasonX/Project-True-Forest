@@ -1,0 +1,25 @@
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\TMX Games\Shaders\For Brad\TileTPMWorkspace.shader">
+    <Files>
+      <File FileName="Assets\TMX Games\Day-Night Cycle\Shaders\ProceduralSky Surround.shader" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Shaders\For Brad\TileTPMWorkspace.shader" Line="8" Column="37" />
+      <File FileName="Assets\TMX Games\Scripts\Terrain\TerrainGenerator.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Foliage Objects\ForestController.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Utils\CustomMathf.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Foliage Objects\FoliageObject.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Foliage Objects\Types\FoliageType.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Controls\CameraControls.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Scoring Metrics\DensityMetric.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Foliage Objects\Foliage Data\ViabilitySettings.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Scoring Metrics\ScoreContainer.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\UI\GameUI.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Effects\EffectsManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Effects\FireLight.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
