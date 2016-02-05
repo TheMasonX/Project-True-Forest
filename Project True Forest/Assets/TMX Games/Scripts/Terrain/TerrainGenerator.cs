@@ -34,8 +34,6 @@ public class TerrainGenerator : MonoBehaviour
 			return;
 		}
 		Instance = this;
-
-		GenerateMesh();
 	}
 
 	#region Mesh
@@ -45,6 +43,7 @@ public class TerrainGenerator : MonoBehaviour
 
 		terrainObject = new GameObject ("Terrain");
 		terrainObject.transform.parent = transform;
+		terrainObject.tag = "Terrain";
 		terrainObject.layer = terrainLayer;
 
 		mapSize = GetComponent<ForestController>().mapSize;
@@ -136,43 +135,6 @@ public class TerrainGenerator : MonoBehaviour
 		}
 
 		return vertex;
-	}
-
-	public void DeformMesh ()
-	{
-		if (!terrainObject)
-		{
-			GenerateMesh();
-			return;
-		}
-
-		proceduralTerrainSettings.GetNoise(mapSize);
-
-		Mesh mesh = terrainObject.GetComponent<MeshFilter>().sharedMesh;
-		Vector3[] vertices = mesh.vertices;
-		Vector2[] uv = mesh.uv;
-		maxHeight = 0f;
-		for (int i = 0; i < mesh.vertexCount; i++)
-		{
-			float height = proceduralTerrainSettings.InterpolateValue(uv[i]);
-			vertices[i].y = height;
-			if (height > maxHeight)
-			{
-				maxHeight = height;
-			}
-			
-		}
-		mesh.vertices = vertices;
-		mesh.RecalculateNormals();
-		mesh.RecalculateBounds();
-		mesh.Optimize();
-
-		terrainObject.GetComponent<MeshFilter>().sharedMesh = mesh;
-		terrainObject.GetComponent<MeshCollider>().sharedMesh = mesh;
-
-		GetComponent<ForestController>().maxTerrainHeight = maxHeight;
-
-		Invoke("UpdateMaterial",0f);
 	}
 	#endregion
 

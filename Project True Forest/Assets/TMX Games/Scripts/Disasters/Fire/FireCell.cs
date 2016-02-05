@@ -33,7 +33,11 @@ public class FireCell
 		Collider[] nearbyObjects = Physics.OverlapBox(centerPoint, cellExtents, Quaternion.Euler(Vector3.zero), ForestController.Instance.objectLayerMask);
 		for (int i = 0; i < nearbyObjects.Length; i++)
 		{
-			var foliageObject = nearbyObjects[i].transform.parent.GetComponent<FoliageObject>();
+			var foliageObject = nearbyObjects[i].transform.GetComponentInParent<FoliageObject>();
+			if (!foliageObject)
+			{
+				continue;
+			}
 			totalArea += foliageObject.GetArea();
 			foliageObjects.Add(foliageObject);
 		}

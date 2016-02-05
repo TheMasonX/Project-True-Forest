@@ -4,7 +4,7 @@ using TMX.Utils;
 
 public class FireLight : MonoBehaviour
 {
-	private Light light;
+	private Light lightComponent;
 	private float updateInterval = .1f;
 
 	public Curve intensityAnimation;
@@ -14,15 +14,15 @@ public class FireLight : MonoBehaviour
 
 	void Awake ()
 	{
-		light = GetComponent<Light>();
+		lightComponent = GetComponent<Light>();
 		if (EffectsManager.Instance.displayFireLights)
 		{
-			light.enabled = true;
+			lightComponent.enabled = true;
 			InvokeRepeating("UpdateLight", 0f, updateInterval);
 		}
 		else
 		{
-			light.enabled = false;
+			lightComponent.enabled = false;
 		}
 	}
 	
@@ -31,7 +31,7 @@ public class FireLight : MonoBehaviour
 		float intensity = intensityAnimation.GetValue(Time.time % intensityAnimation.maxInputValue);
 		float range = rangeAnimation.GetValue(Time.time + .12312f % rangeAnimation.maxInputValue);
 		float particlesModifier = particleCountModifier.GetValue(particles.particleCount);
-		light.range = range * particlesModifier;
-		light.intensity = intensity * particlesModifier;
+		lightComponent.range = range * particlesModifier;
+		lightComponent.intensity = intensity * particlesModifier;
 	}
 }

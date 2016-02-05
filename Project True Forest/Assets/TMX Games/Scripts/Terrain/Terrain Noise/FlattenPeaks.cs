@@ -32,8 +32,6 @@ public class FlattenPeaks
 
 	public float[,] Flatten (float[,] grid, float _gridScaleX, float _gridScaleY)
 	{
-		float lastTime = Time.realtimeSinceStartup;
-
 		gridScaleX = _gridScaleX;
 		gridScaleY = _gridScaleY;
 		filterSize = filterRadius * 2 + 1;
@@ -51,8 +49,8 @@ public class FlattenPeaks
 				SamplePoint(ref grid, x, y);
 			}
 		}
-		int gridPoints = (width * height);
-		int samplePoints = gridPoints * filterSize * filterSize;
+//		int gridPoints = (width * height);
+//		int samplePoints = gridPoints * filterSize * filterSize;
 //		Debug.Log("Flattening " + gridPoints.ToString("E2") + " points (" + samplePoints.ToString("E2") + " samples) took " + (Time.realtimeSinceStartup - lastTime).ToString("E2") + " seconds");
 		return grid;
 	}
@@ -88,7 +86,6 @@ public class FlattenPeaks
 
 		}
 
-		float originalSlope = sampleSlope;
 		sampleSlope /= (float)currentSamples;
 
 		calcSmoothing = smoothingFromSlope.GetValue(sampleSlope);

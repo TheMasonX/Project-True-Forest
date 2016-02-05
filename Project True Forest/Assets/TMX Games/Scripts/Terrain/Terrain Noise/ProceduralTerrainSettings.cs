@@ -6,13 +6,14 @@ using TMX.Utils;
 public class ProceduralTerrainSettings
 {
 	public int seed;
-	public bool useSeed;
+	[HideInInspector] public bool useSeed;
 	public int heightmapResolution;
 	public float roughness;
 	public AnimationCurve initialHeightCurve;
 	public float[,] heightmap;
 
-	public FlattenPeaks[] flattenPeaksPasses;
+	public CoherentNoise noiseSettings;
+//	public FlattenPeaks[] flattenPeaksPasses;
 	public SmoothArray[] smoothingPasses;
 
 	private Vector3 mapSize;
@@ -21,21 +22,27 @@ public class ProceduralTerrainSettings
 	{
 		mapSize = newMapSize;
 
-		if (!useSeed)
+		if (!LevelController.Instance)
 		{
-			seed = CustomMathf.GetRandomSeed();
+			if(!useSeed)
+				seed = CustomMathf.GetRandomSeed();
+		}
+		else
+		{
+			seed = LevelController.Instance.seed;
 		}
 
 		heightmap = new float[heightmapResolution,heightmapResolution];
-		heightmap = DiamondSquare.DiamondSquareGrid(heightmapResolution, seed, 5f, mapSize.y, roughness, initialHeightCurve);
+		noiseSettings.Generate(ref heightmap, mapSize.y, seed);
 
-		for (int i = 0; i < flattenPeaksPasses.Length; i++)
-		{
-			if (flattenPeaksPasses[i].filterRadius > 0)
-			{
-				heightmap = flattenPeaksPasses[i].Flatten(heightmap, mapSize.x / (float)heightmapResolution, mapSize.z / (float)heightmapResolution);
-			}
-		}
+//		heightmap = DiamondSquare.DiamondSquareGrid(heightmapResolution, seed, 5f, mapSize.y, roughness, initialHeightCurve);
+//		for (int i = 0; i < flattenPeaksPasses.Length; i++)
+//		{
+//			if (flattenPeaksPasses[i].filterRadius > 0)
+//			{
+//				heightmap = flattenPeaksPasses[i].Flatten(heightmap, mapSize.x / (float)heightmapResolution, mapSize.z / (float)heightmapResolution);
+//			}
+//		}
 
 		for (int i = 0; i < smoothingPasses.Length; i++)
 		{

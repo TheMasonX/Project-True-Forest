@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using TMX.Utils;
 
 public class GameUI : MonoBehaviour
 {
@@ -35,8 +36,12 @@ public class GameUI : MonoBehaviour
 
 	public void UpdateTimeScale (float timeScale)
 	{
-//		float timeScale = timeScaleSlider.value;
-		timeScaleText.text = "Time Scale: " + timeScale.ToString("F");
+		timeScaleText.text = "Time Scale: " + timeScale.ToString("P");
 		Time.timeScale = timeScale;
+	}
+
+	public void GenerateNewMap ()
+	{
+		LevelController.Instance.NewMap(CustomMathf.GetRandomSeed());
 	}
 }

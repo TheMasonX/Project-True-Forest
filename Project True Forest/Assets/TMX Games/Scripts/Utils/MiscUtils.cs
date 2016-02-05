@@ -34,5 +34,10 @@ namespace TMX.Utils
 			tex.SetPixels(colors);
 			tex.Apply();
 		}
+
+//		public static FoliageObject GetFoliageObjectInParent (Transform childObject)
+//		{
+//			childObject.GetComponentInParent
+//		}
 	}
 }

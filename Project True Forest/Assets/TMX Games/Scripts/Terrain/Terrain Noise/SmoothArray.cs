@@ -11,8 +11,6 @@ public class SmoothArray
 
 	public float[,] SmoothGrid (float[,] grid)
 	{
-		float lastTime = Time.realtimeSinceStartup;
-
 		int filterSize = filterRadius * 2 + 1;
 		int width = grid.GetLength(0);
 		int height = grid.GetLength(1);
@@ -29,8 +27,8 @@ public class SmoothArray
 			}
 		}
 
-		int gridPoints = (width * height);
-		int samplePoints = gridPoints * filterSize * filterSize;
+//		int gridPoints = (width * height);
+//		int samplePoints = gridPoints * filterSize * filterSize;
 //		Debug.Log("Smoothing " + gridPoints.ToString("E2") + " points (" + samplePoints.ToString("E2") + " samples) took " + (Time.realtimeSinceStartup - lastTime).ToString("E2") + " seconds");
 		return newGrid;
 	}
