@@ -14,11 +14,15 @@ public class TerrainGenerator : MonoBehaviour
 	[Range(0f, .25f)]
 	public float borderPadding = .05f;
 
-	public TerrainWallGenerator wallSettings;
-
 	public ProceduralTerrainSettings proceduralTerrainSettings;
 
+	public TerrainWallGenerator wallSettings;
+
+	public FlowMapGenerator flowMapSettings;
+
 	public Material terrainMaterial;
+	public Shader defaultTerrainShader;
+	public Shader rainyTerrainShader;
 	private GameObject terrainObject;
 	public int terrainLayer = 8;
 
@@ -34,8 +38,6 @@ public class TerrainGenerator : MonoBehaviour
 			return;
 		}
 		Instance = this;
-
-		GenerateMesh();
 	}
 
 	#region Mesh
@@ -45,6 +47,7 @@ public class TerrainGenerator : MonoBehaviour
 
 		terrainObject = new GameObject ("Terrain");
 		terrainObject.transform.parent = transform;
+		terrainObject.tag = "Terrain";
 		terrainObject.layer = terrainLayer;
 
 		mapSize = GetComponent<ForestController>().mapSize;
@@ -121,7 +124,8 @@ public class TerrainGenerator : MonoBehaviour
 
 		wallSettings.GenerateInitialWalls(terrainObject.transform, mesh.vertices, gridSize, mapSize);
 
-		Invoke("UpdateMaterial",0f);
+		UpdateMaterial();
+		Invoke("GenerateFlowMap", .01f);
 	}
 
 	Vector3 SetVertex (int x, int y, Vector3 offset, Vector2 uv)
@@ -137,43 +141,6 @@ public class TerrainGenerator : MonoBehaviour
 
 		return vertex;
 	}
-
-	public void DeformMesh ()
-	{
-		if (!terrainObject)
-		{
-			GenerateMesh();
-			return;
-		}
-
-		proceduralTerrainSettings.GetNoise(mapSize);
-
-		Mesh mesh = terrainObject.GetComponent<MeshFilter>().sharedMesh;
-		Vector3[] vertices = mesh.vertices;
-		Vector2[] uv = mesh.uv;
-		maxHeight = 0f;
-		for (int i = 0; i < mesh.vertexCount; i++)
-		{
-			float height = proceduralTerrainSettings.InterpolateValue(uv[i]);
-			vertices[i].y = height;
-			if (height > maxHeight)
-			{
-				maxHeight = height;
-			}
-			
-		}
-		mesh.vertices = vertices;
-		mesh.RecalculateNormals();
-		mesh.RecalculateBounds();
-		mesh.Optimize();
-
-		terrainObject.GetComponent<MeshFilter>().sharedMesh = mesh;
-		terrainObject.GetComponent<MeshCollider>().sharedMesh = mesh;
-
-		GetComponent<ForestController>().maxTerrainHeight = maxHeight;
-
-		Invoke("UpdateMaterial",0f);
-	}
 	#endregion
 
 	public void UpdateMaterial ()
@@ -184,5 +151,21 @@ public class TerrainGenerator : MonoBehaviour
 	public void AddBurntTexture (Texture2D burntTexture)
 	{
 		terrainMaterial.SetTexture("_BurntTexture", burntTexture);
+	}
+		
+	public void GenerateFlowMap ()
+	{
+		flowMapSettings.GenerateFlowMap();
+	}
+
+	public void ChangeTerrainShaderToRainy ()
+	{
+		terrainMaterial.shader = rainyTerrainShader;
+		terrainMaterial.SetTexture("_WaterFlowMap", flowMapSettings.flowMap);
+	}
+
+	public void ChangeTerrainShaderToDefault ()
+	{
+		terrainMaterial.shader = defaultTerrainShader;
 	}
 }

@@ -16,7 +16,6 @@ public class DensityMetric
 
 	public void GetAverageDensity (List<FoliageObject> foliageObjects)
 	{
-		float lastAverage = averageDensity;
 		averageDensity = 0f;
 		for (int j = 0; j < foliageObjects.Count; j++)
 		{

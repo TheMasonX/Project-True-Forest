@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TMX.Utils;
 
 
 [ExecuteInEditMode]
@@ -7,8 +8,27 @@ public class DayNightCycleManager : MonoBehaviour
 {
 	public static DayNightCycleManager Instance;
 
-//	private Transform rotationContainer;
-	
+	private Transform rotationContainer;
+
+	[HideInInspector] public bool debugRotationSelected;
+	private bool debugRotationActive;
+	public bool DebugRotationActive
+	{
+		get
+		{
+			return debugRotationActive;
+		}
+		set
+		{
+			if (value == true && debugRotationActive != true)
+			{
+				lastRotation = System.DateTime.Now.Ticks;
+			}
+			debugRotationActive = value;
+		}
+	}
+	[HideInInspector] public float debugRotationLength = 30f;
+	[HideInInspector] public long lastRotation;
 
 	public bool shouldRotate = true;
 	public bool shouldUpdate = true;
@@ -19,8 +39,7 @@ public class DayNightCycleManager : MonoBehaviour
 	public GameObject moon;
 	public Light sunLight;
 	public Light moonLight;
-	[HideInInspector]
-	public Light dominantLight;
+	[HideInInspector] public Light dominantLight;
 
 	public int daysInLunarCycle = 28;
 	public int currentLunarCycleDay = 0;
@@ -36,6 +55,8 @@ public class DayNightCycleManager : MonoBehaviour
 
 	public LightSettings sunLightSettings;
 	public LightSettings moonLightSettings;
+
+	[HideInInspector] public WeatherController weatherController;
 
 	//preserves the lighting reference to the sun object
 	private bool editorWaitedOneFrame;
@@ -59,7 +80,9 @@ public class DayNightCycleManager : MonoBehaviour
 		}
 		Instance = this;
 
-//		rotationContainer = transform.GetChild(0);
+		weatherController = GetComponent<WeatherController>();
+
+		rotationContainer = transform.GetChild(0);
 
 		if(moonBillboard)
 		{
@@ -86,7 +109,7 @@ public class DayNightCycleManager : MonoBehaviour
 
 		if(shouldRotate && Application.isPlaying)
 		{
-			transform.Rotate(rotationAxis, (360f / dayLength) * Time.deltaTime);
+			rotationContainer.Rotate(rotationAxis, (360f / dayLength) * Time.deltaTime);
 		}
 
 		if(shouldUpdate || !Application.isPlaying)
@@ -99,21 +122,15 @@ public class DayNightCycleManager : MonoBehaviour
 
 	void UpdateSettings()
 	{
-		dayPercent = Vector3.Dot(transform.forward, Vector3.up) * .5f + .5f;
+		dayPercent = Vector3.Dot(rotationContainer.forward, Vector3.up) * .5f + .5f;
 		UpdateFog();
 		UpdateLights();
 
+		weatherController.UpdateCloudLighting(dayPercent, dominantLight);
+
 		if(dayPercent > .5f)
 		{
-			Vector4 starRotation = Quaternion.LookRotation(moon.transform.up, transform.right).eulerAngles;
-			
-//			Vector4 starRotation = rotationContainer.rotation.eulerAngles;
-//			if(starRotation.z > 0)
-//			{
-//				starRotation.x = 270f - (starRotation.x - 270f);
-////				starRotation.y = transform.rotation.eulerAngles.y;
-//			}
-//			starRotation.x *= -1f;
+			Vector4 starRotation = Quaternion.LookRotation(moon.transform.up, rotationContainer.right).eulerAngles;
 			RenderSettings.skybox.SetVector("_StarRotation", starRotation);
 		}
 	}
@@ -128,8 +145,9 @@ public class DayNightCycleManager : MonoBehaviour
 
 	void UpdateLights ()
 	{
-		sunLightSettings.UpdateSettings(dayPercent, sunLight);
-		moonLightSettings.UpdateSettings(dayPercent, moonLight);
+		float cloudBlockingPercentage = weatherController.cloudBlockingPercentage;
+		sunLightSettings.UpdateSettings(dayPercent, sunLight, cloudBlockingPercentage);
+		moonLightSettings.UpdateSettings(dayPercent, moonLight, cloudBlockingPercentage);
 
 		dominantLight = (sunLight.intensity >= moonLight.intensity) ? sunLight : moonLight;
 
@@ -173,6 +191,14 @@ public class DayNightCycleManager : MonoBehaviour
 
 		moonBillboard.transform.parent.localScale = Vector3.one * .05f * moonSize * moonBillboardDistance;
 	}
+
+	public void DebugRotation ()
+	{
+		float deltaTime = CustomMathf.TicksToSeconds(System.DateTime.Now.Ticks - lastRotation);
+
+		rotationContainer.Rotate(rotationAxis, (360f / debugRotationLength) * deltaTime);
+		lastRotation = System.DateTime.Now.Ticks;
+	}
 }
 
 [System.Serializable]
@@ -183,10 +209,10 @@ public struct LightSettings
 	public Color currentLightColor;
 	public float currentLightIntensity;
 
-	public void UpdateSettings (float dayPercent, Light light)
+	public void UpdateSettings (float dayPercent, Light light, float cloudBlockingPercentage)
 	{
 		currentLightColor = lightColor.Evaluate(dayPercent);
-		currentLightIntensity = currentLightColor.a * maxLightIntensity;
+		currentLightIntensity = currentLightColor.a * maxLightIntensity * cloudBlockingPercentage;
 		light.color = currentLightColor;
 		light.intensity = currentLightIntensity;
 	}

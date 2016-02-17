@@ -14,21 +14,19 @@ public class TerrainInspector : Editor
 
 		EditorGUILayout.Space();
 
-		script.proceduralTerrainSettings.useSeed = EditorGUILayout.Foldout(script.proceduralTerrainSettings.useSeed, "Use Adjustable Seed");
-		if (script.proceduralTerrainSettings.useSeed)
+		bool useSeed = script.proceduralTerrainSettings.useSeed = EditorGUILayout.Foldout(script.proceduralTerrainSettings.useSeed, "Use Assigned Seed");
+
+		if (useSeed)
 		{
-			script.proceduralTerrainSettings.seed = EditorGUILayout.IntField(script.proceduralTerrainSettings.seed);
-			EditorGUILayout.Space();
+			script.proceduralTerrainSettings.seed = EditorGUILayout.IntField("Seed", script.proceduralTerrainSettings.seed);
 		}
 
-		if (GUILayout.Button("Generate Terrain"))
+		EditorGUILayout.Space();
+
+
+		if (GUILayout.Button("--- Generate Terrain ---"))
 		{
 			script.GenerateMesh();
-		}
-
-		if (GUILayout.Button("Deform Terrain (No Mesh Generation)"))
-		{
-			script.DeformMesh();
 		}
 	}
 }

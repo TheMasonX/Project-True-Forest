@@ -104,9 +104,14 @@ namespace TMX.Utils
 		}
 		#endregion
 
+		public static float GetRandomSign ()
+		{
+			return ((Random.value < .5f) ? -1f : 1f);
+		}
+
 		public static int GetRandomSeed ()
 		{
-			return System.DateTime.Now.Millisecond;
+			return System.DateTime.Now.Millisecond + System.DateTime.Now.Second * 1000;
 		}
 
 		private static System.Random rng = new System.Random();  
@@ -123,11 +128,15 @@ namespace TMX.Utils
 			}  
 		}
 
-		public static float GetSlopeAtPoint (ref Vector3 point, LayerMask layerMask, float rayDistance)
+		public static float GetSlopeAtPoint (ref Vector3 point, LayerMask terrainLayerMask, LayerMask objectLayerMask, float rayDistance)
 		{
 			RaycastHit hit;
-			if (Physics.Raycast(point + Vector3.up * 5f, Vector3.down, out hit, rayDistance, layerMask))
+			if (Physics.Raycast(point + Vector3.up * 5f, Vector3.down, out hit, rayDistance, terrainLayerMask | objectLayerMask))
 			{
+				if (hit.transform.tag != "Terrain")
+				{
+					return 180f;
+				}
 				point = hit.point;
 				return Vector3.Angle(hit.normal, Vector3.up);
 			}
@@ -139,7 +148,7 @@ namespace TMX.Utils
 
 		public static void NewGaussSeed ()
 		{
-			NewGaussSeed(System.DateTime.Now.Millisecond);
+			NewGaussSeed(GetRandomSeed());
 		}
 
 		public static void NewGaussSeed (int seed)
@@ -170,6 +179,16 @@ namespace TMX.Utils
 				total += values[i];
 			}
 			return total / values.Length;
+		}
+
+		public static float TicksToSeconds (long ticks)
+		{
+			return ((float)ticks / 10000000f);
+		}
+
+		public static long SecondsToTicks (float seconds)
+		{
+			return (long)(seconds * 10000000);
 		}
 	}
 

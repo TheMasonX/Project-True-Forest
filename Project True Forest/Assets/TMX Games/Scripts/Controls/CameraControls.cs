@@ -8,6 +8,7 @@ public class CameraControls : MonoBehaviour
 	public float superSpeedMultiplier = 3f;
 	public float edgeClampDistance = 5f;
 	private Vector2 mapSize;
+	private Vector2 clampedLimits;
 
 	public float zoomSpeed = 5f;
 	public float zoomSmoothing = .1f;
@@ -19,7 +20,8 @@ public class CameraControls : MonoBehaviour
 	public float maxMouseLookY = 50f;
 	private Vector2 mouseLook;
 
-	private Transform childTransform;
+	private Transform cameraContainer;
+	private Transform cameraTransform;
 	private bool mouseLookEnabled = false;
 	private Vector2 cursorPosition;
 
@@ -28,9 +30,13 @@ public class CameraControls : MonoBehaviour
 
 	void Start ()
 	{
-		childTransform = transform.GetChild(0);
-		mouseLook.y = -childTransform.localRotation.eulerAngles.x;
-		mapSize = new Vector2 (ForestController.Instance.mapSize.x / 2f - edgeClampDistance, ForestController.Instance.mapSize.z / 2f - edgeClampDistance);
+		cameraContainer = transform.GetChild(0);
+		cameraTransform = cameraContainer.transform.GetChild(0);
+		mouseLook.y = -cameraTransform.localRotation.eulerAngles.x;
+		mapSize = new Vector2 (ForestController.Instance.mapSize.x / 2f, ForestController.Instance.mapSize.z / 2f);
+		clampedLimits = mapSize;
+		clampedLimits.x -= edgeClampDistance;
+		clampedLimits.y -= edgeClampDistance;
 	}
 	
 
@@ -50,6 +56,15 @@ public class CameraControls : MonoBehaviour
 		lastTime = Time.realtimeSinceStartup;
 	}
 
+	void UpdateHeightSettings (Vector3 targetPosition)
+	{
+		Vector3 positionClampedToMap = targetPosition;
+		positionClampedToMap.x = Mathf.Clamp(positionClampedToMap.x, -mapSize.x * .99f, mapSize.x * .99f);
+		positionClampedToMap.z = Mathf.Clamp(positionClampedToMap.z, -mapSize.y * .99f, mapSize.y * .99f);
+
+		RaycastHit hit;
+	}
+
 	void GetInput()
 	{
 		Vector2 input = new Vector2 (Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
@@ -65,11 +80,13 @@ public class CameraControls : MonoBehaviour
 			input *= superSpeedMultiplier;
 		}
 
-		Vector3 targetMovementPosition = transform.position + transform.right * input.x + transform.forward * input.y;
+		Vector3 targetMovementPosition = transform.position + cameraContainer.right * input.x + cameraContainer.forward * input.y;
 		targetMovementPosition = Vector3.Lerp(transform.position, targetMovementPosition, deltaTime / movementSmoothing);
-		targetMovementPosition.x = Mathf.Clamp(targetMovementPosition.x, -mapSize.x, mapSize.x);
-		targetMovementPosition.z = Mathf.Clamp(targetMovementPosition.z, -mapSize.y, mapSize.y);
+		targetMovementPosition.x = Mathf.Clamp(targetMovementPosition.x, -clampedLimits.x, clampedLimits.x);
+		targetMovementPosition.z = Mathf.Clamp(targetMovementPosition.z, -clampedLimits.y, clampedLimits.y);
 //		transform.position = targetMovementPosition;
+
+		UpdateHeightSettings(targetMovementPosition);
 
 		float zoom = Input.mouseScrollDelta.y * -50f * deltaTime * zoomSpeed;
 		Vector3 targetPosition = new Vector3(targetMovementPosition.x, Mathf.Clamp(targetMovementPosition.y + zoom, zoomRange.x, zoomRange.y), targetMovementPosition.z);
@@ -78,14 +95,14 @@ public class CameraControls : MonoBehaviour
 
 	void MouseLook ()
 	{
-		Vector2 lastMouseLook = mouseLook;
+//		Vector2 lastMouseLook = mouseLook;
 		mouseLook.x += Input.GetAxis("Mouse X") * deltaTime * 10f * mouseLookSpeed;
 		mouseLook.y += Input.GetAxis("Mouse Y") * deltaTime * 10f * mouseLookSpeed;
 
 		mouseLook.x = ClampAngle(mouseLook.x, -360f, 360f);
 		mouseLook.y = ClampAngle(mouseLook.y, minMouseLookY, maxMouseLookY);
-		transform.localRotation = Quaternion.Euler(0f, mouseLook.x, 0f);
-		childTransform.localRotation = Quaternion.Euler(-mouseLook.y, 0f, 0f);
+		cameraContainer.localRotation = Quaternion.Euler(0f, mouseLook.x, 0f);
+		cameraTransform.localRotation = Quaternion.Euler(-mouseLook.y, 0f, 0f);
 	}
 
 	void ToggleMouseLook ()

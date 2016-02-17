@@ -4,11 +4,6 @@ using TMX.Utils;
 
 namespace TMX.Utils
 {
-//	public class CommonStructs
-//	{
-//
-//	}
-
 	[System.Serializable]
 	public class Curve
 	{
@@ -29,7 +24,7 @@ namespace TMX.Utils
 		public virtual float GetValue (float inputValue)
 		{
 			inputValue = Mathf.Clamp(inputValue, minInputValue, maxInputValue);
-			inputValue = (inputValue - minInputValue) / (maxInputValue - minInputValue);
+			inputValue = (inputValue - minInputValue) / Mathf.Max(maxInputValue - minInputValue, .00001f);
 
 			return CustomMathf.RemapValue(curve.Evaluate(inputValue), minOutputValue, maxOutputValue, true);
 		}
@@ -109,16 +104,31 @@ namespace TMX.Utils
 		private float samplePoint;
 		private float currentValue;
 
-		public float AnimateValue (float timeInterval)
+		public float GetAnimatedValue (float timeInterval)
 		{
 			samplePoint += animationSpeed * timeInterval * frequency;
 			currentValue = outputRange.GetValue(Mathf.PerlinNoise(samplePoint, seed));
 			return currentValue;
 		}
 
-		public float GetAnimatedValue ()
+		public float GetCurrentValue ()
 		{
 			return currentValue;
+		}
+	}
+
+	[System.Serializable]
+	public class ScaledGradient
+	{
+		public Gradient gradient;
+		public float minInputValue;
+		public float maxInputValue;
+
+		public Color GetColor (float inputValue)
+		{
+			inputValue = Mathf.Clamp(inputValue, minInputValue, maxInputValue);
+			inputValue = (inputValue - minInputValue) / Mathf.Max(maxInputValue - minInputValue, .00001f);
+			return gradient.Evaluate(inputValue);
 		}
 	}
 }

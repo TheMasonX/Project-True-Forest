@@ -12,18 +12,6 @@ public class ForestControllerInspector : Editor
 	{
 		DrawDefaultInspector();
 		var script = target as ForestController;
-
-		EditorGUILayout.Space();
-
-//		if (GUILayout.Button("Random Seed"))
-//		{
-//			script.seed = CustomMathf.GetRandomSeed();
-//		}
-
-		if (GUILayout.Button("Respawn"))
-		{
-			script.Respawn();
-		}
 	}
 }
 

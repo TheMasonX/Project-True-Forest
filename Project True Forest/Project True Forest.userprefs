@@ -1,0 +1,19 @@
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\TMX Games\Day-Night Cycle\Shaders\Clouds\Clouds Standard.shader">
+    <Files>
+      <File FileName="Assets\TMX Games\Scripts\Terrain\Terrain Noise\ProceduralTerrainSettings.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Effects\FireLight.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Day-Night Cycle\Scripts\DayNightCycleManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Weather\WeatherController.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Controls\CameraControls.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Scripts\Weather\TemperatureSettings.cs" Line="1" Column="1" />
+      <File FileName="Assets\TMX Games\Day-Night Cycle\Shaders\Clouds\Clouds Standard.shader" Line="261" Column="37" />
+      <File FileName="Assets\TMX Games\Scripts\Weather\WaterCycle.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

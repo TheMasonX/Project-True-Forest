@@ -25,10 +25,11 @@ public class TreeCutting : MonoBehaviour
 			RaycastHit hit;
 			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 5000f, layerMask))
 			{
-				if (hit.collider.transform.parent.GetComponent<FoliageObject>())
+				var foliageObject = hit.transform.GetComponentInParent<FoliageObject>();
+				if(foliageObject)
 				{
 					PlayClipAtPosition(hit.point);
-					hit.collider.transform.parent.GetComponent<FoliageObject>().ApplyDamage(damageDealt);
+					foliageObject.ApplyDamage(damageDealt);
 					lastChop = Time.time;
 				}
 			}

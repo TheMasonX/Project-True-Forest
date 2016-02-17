@@ -35,14 +35,16 @@ public class PoissonDiscSampler
 	private readonly float cellSize;
 	private Vector2[,] grid;
 	private  List<Vector2> activeSamples = new List<Vector2>();
+	private Vector2 clusterRange;
 
 	/// Create a sampler with the following parameters:
 	///
 	/// width:  each sample's x coordinate will be between [0, width]
 	/// height: each sample's y coordinate will be between [0, height]
 	/// radius: each sample will be at least `radius` units away from any other sample, and at most 2 * `radius`.
-	public PoissonDiscSampler(float width, float height, float radius, int seed)
+	public PoissonDiscSampler(float width, float height, float radius, Vector2 _clusterRange, int seed)
 	{
+		clusterRange = _clusterRange;
 		Random.seed = seed;
 		rect = new Rect(0, 0, width, height);
 		radius2 = radius * radius;
@@ -102,7 +104,8 @@ public class PoissonDiscSampler
 		int xmax = Mathf.Min(pos.x + 2, grid.GetLength(0) - 1);
 		int ymax = Mathf.Min(pos.y + 2, grid.GetLength(1) - 1);
 
-//		float modRad2 = radius2 * CustomMathf.RemapValue(Mathf.PerlinNoise(sample.x + Random.seed, sample.y + Random.seed), .4f, 1.5f);
+		//randomly modify the radius to cluster the samples
+		float modRad2 = radius2 * CustomMathf.RemapValue(Mathf.PerlinNoise(sample.x + Random.seed, sample.y + Random.seed), clusterRange.x, clusterRange.y);
 
 		for (int y = ymin; y <= ymax; y++)
 		{
@@ -112,7 +115,7 @@ public class PoissonDiscSampler
 				if (s != Vector2.zero)
 				{
 					Vector2 d = s - sample;
-					if (d.x * d.x + d.y * d.y < radius2) return false;
+					if (d.x * d.x + d.y * d.y < modRad2) return false;
 				}
 			}
 		}

@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 4f38051ac2e836340b32f14a009e876c
+timeCreated: 1455368348
+licenseType: Free
+ShaderImporter:
+  defaultTextures:
+  - _SideDiffuse: {fileID: 2800000, guid: 24b825f299d3a934fa4a7ff70c2f04bf, type: 3}
+  - _SideNormal: {fileID: 2800000, guid: ab819437bc5776948ac0e1bb58701c49, type: 3}
+  - _Strata: {fileID: 2800000, guid: 907a460eb7f17684ca64ef64cec2197d, type: 3}
+  - _DiffuseNoise: {fileID: 2800000, guid: b8ea00fcfa6ae004d84e7621154550da, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
