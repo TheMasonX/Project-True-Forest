@@ -151,6 +151,7 @@ public class FoliageInfo
 		if (foliageObject == null)
 		{
 			destroyedCallback(this);
+			return;
 		}
 
 		currentScale = foliageObject.GetAgedScaleFloat(currentTime);

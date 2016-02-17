@@ -39,11 +39,11 @@ public class TerrainObject : MonoBehaviour
 
 	public float GetArea()
 	{
-		return baseArea * scale;
+		return baseArea * scale * scale;
 	}
 
 	public float GetVolume()
 	{
-		return baseVolume * scale;
+		return baseVolume * scale * scale * scale;
 	}
 }

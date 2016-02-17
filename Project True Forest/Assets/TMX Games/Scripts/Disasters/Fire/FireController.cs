@@ -11,6 +11,7 @@ public class FireController : MonoBehaviour
 	public float burnTravelSpeed = 1f;
 	public Curve burnSpreadChance;
 	public float burnUpdateInterval = 1f;
+	[HideInInspector] public Transform particlesContainer;
 	public GameObject groundFireParticles;
 	public Curve fuelFromCellDensity;
 	public float maxFuelConsumptionRate;
@@ -37,7 +38,8 @@ public class FireController : MonoBehaviour
 			return;
 		}
 		Instance = this;
-		InitializeFireGrid();
+		activeCells = new List<FireCell> ();
+		depletedCells = new List<FireCell> ();
 	}
 
 	#region Fire Starting
@@ -51,6 +53,14 @@ public class FireController : MonoBehaviour
 		cellsX = Mathf.FloorToInt(mapSize.x / gridSize);
 		cellsY = Mathf.FloorToInt(mapSize.z / gridSize);
 		cells = new FireCell[cellsX,cellsY];
+
+		if (particlesContainer)
+		{
+			Destroy(particlesContainer.gameObject);
+		}
+
+		particlesContainer = new GameObject ("Fire Particles Container").transform;
+		particlesContainer.parent = transform;
 
 		burntTextureSettings.InitializeTexture(cellsX, cellsY);
 
@@ -74,7 +84,13 @@ public class FireController : MonoBehaviour
 				}
 
 				cells[x, y] = new FireCell (gridPosition, centerPoint, normal);
-				cells[x, y].Initialize(cellExtents, fuelFromCellDensity);
+				cells[x, y].InitializeFuelInfo(cellExtents, fuelFromCellDensity);
+
+				GameObject newGroundParticles = GameObject.Instantiate(groundFireParticles, centerPoint, Quaternion.LookRotation(normal)) as GameObject;
+				newGroundParticles.name = groundFireParticles.name + " [" + x.ToString() + "," + y.ToString() + "]";
+				newGroundParticles.transform.parent = particlesContainer;
+				cells[x, y].groundParticles = newGroundParticles.GetComponent<FireParticleEffect>();
+				cells[x, y].groundParticles.cell = cells[x, y];
 			}
 		}
 
@@ -98,7 +114,7 @@ public class FireController : MonoBehaviour
 		{
 			for (int y = 0; y < cellsY; y++)
 			{
-				cells[x, y].Initialize(cellExtents, fuelFromCellDensity);
+				cells[x, y].InitializeFuelInfo(cellExtents, fuelFromCellDensity);
 				AddAdjacentCells(cells[x, y]);
 
 				float checkDistance = (cells[x, y].centerPoint - startingPoint).sqrMagnitude;
@@ -110,7 +126,7 @@ public class FireController : MonoBehaviour
 			}
 		}
 
-		InitializeCell(ref cells[startingCell.x, startingCell.y]);
+		IgniteCell(ref cells[startingCell.x, startingCell.y]);
 
 		InvokeRepeating("UpdateFire", burnUpdateInterval, burnUpdateInterval);
 	}
@@ -156,10 +172,8 @@ public class FireController : MonoBehaviour
 			}
 			if (activeCells[i].fuelRemaining < minFuel)
 			{
+				activeCells[i].groundParticles.StopFire();
 				depletedCells.Add(activeCells[i]);
-				ParticleSystem groundParticles = activeCells[i].groundParticles.particles.GetComponent<ParticleSystem>();
-				groundParticles.Stop(true);
-				Destroy(activeCells[i].groundParticles.particles, groundParticles.startLifetime * 1.5f);
 				activeCells.RemoveAt(i);
 			}
 			if (i % 5 == 0)
@@ -188,7 +202,7 @@ public class FireController : MonoBehaviour
 			float spreadAttemptValue = Random.value * Vector3.Dot(initialCell.normal, adjacentCell.normal);
 			if (spreadAttemptValue >= burnSpreadChance.GetValue(adjacentCell.fuelRemaining))
 			{
-				InitializeCell(ref adjacentCell);
+				IgniteCell(ref adjacentCell);
 				initialCell.adjacentCells.RemoveAt(i);
 				i--;
 				continue;
@@ -198,11 +212,11 @@ public class FireController : MonoBehaviour
 	#endregion
 
 	#region Cell Modification
-	public void InitializeCell (ref FireCell newCell)
+	public void IgniteCell (ref FireCell newCell)
 	{
+		newCell.InitializeFuelInfo(cellExtents, fuelFromCellDensity);
 		newCell.burnStartTime = Time.time;
-		GameObject newGroundParticles = GameObject.Instantiate(groundFireParticles, newCell.centerPoint, Quaternion.LookRotation(newCell.normal)) as GameObject;
-		newCell.groundParticles = new FireParticles (newGroundParticles);
+		newCell.groundParticles.StartFire();
 		newCell.activated = true;
 		activeCells.Add(newCell);
 	}
@@ -235,17 +249,6 @@ public class FireController : MonoBehaviour
 	public FireCell GetCellFromV2Int (Vector2Int gridPoint)
 	{
 		return cells[gridPoint.x, gridPoint.y];
-	}
-}
-
-[System.Serializable]
-public class FireParticles
-{
-    public GameObject particles;
-
-	public FireParticles (GameObject newParticles)
-	{
-		particles = newParticles;
 	}
 }
 

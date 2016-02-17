@@ -20,7 +20,8 @@ public class CameraControls : MonoBehaviour
 	public float maxMouseLookY = 50f;
 	private Vector2 mouseLook;
 
-	private Transform childTransform;
+	private Transform cameraContainer;
+	private Transform cameraTransform;
 	private bool mouseLookEnabled = false;
 	private Vector2 cursorPosition;
 
@@ -29,8 +30,9 @@ public class CameraControls : MonoBehaviour
 
 	void Start ()
 	{
-		childTransform = transform.GetChild(0);
-		mouseLook.y = -childTransform.localRotation.eulerAngles.x;
+		cameraContainer = transform.GetChild(0);
+		cameraTransform = cameraContainer.transform.GetChild(0);
+		mouseLook.y = -cameraTransform.localRotation.eulerAngles.x;
 		mapSize = new Vector2 (ForestController.Instance.mapSize.x / 2f, ForestController.Instance.mapSize.z / 2f);
 		clampedLimits = mapSize;
 		clampedLimits.x -= edgeClampDistance;
@@ -78,7 +80,7 @@ public class CameraControls : MonoBehaviour
 			input *= superSpeedMultiplier;
 		}
 
-		Vector3 targetMovementPosition = transform.position + transform.right * input.x + transform.forward * input.y;
+		Vector3 targetMovementPosition = transform.position + cameraContainer.right * input.x + cameraContainer.forward * input.y;
 		targetMovementPosition = Vector3.Lerp(transform.position, targetMovementPosition, deltaTime / movementSmoothing);
 		targetMovementPosition.x = Mathf.Clamp(targetMovementPosition.x, -clampedLimits.x, clampedLimits.x);
 		targetMovementPosition.z = Mathf.Clamp(targetMovementPosition.z, -clampedLimits.y, clampedLimits.y);
@@ -99,8 +101,8 @@ public class CameraControls : MonoBehaviour
 
 		mouseLook.x = ClampAngle(mouseLook.x, -360f, 360f);
 		mouseLook.y = ClampAngle(mouseLook.y, minMouseLookY, maxMouseLookY);
-		transform.localRotation = Quaternion.Euler(0f, mouseLook.x, 0f);
-		childTransform.localRotation = Quaternion.Euler(-mouseLook.y, 0f, 0f);
+		cameraContainer.localRotation = Quaternion.Euler(0f, mouseLook.x, 0f);
+		cameraTransform.localRotation = Quaternion.Euler(-mouseLook.y, 0f, 0f);
 	}
 
 	void ToggleMouseLook ()

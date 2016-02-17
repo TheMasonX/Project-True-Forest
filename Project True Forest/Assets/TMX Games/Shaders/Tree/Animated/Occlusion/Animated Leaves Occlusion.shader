@@ -10,7 +10,7 @@
 		_WindAnimation ("Wind Animation", Vector) = (1.234,1.828734,0.345,0.92345)
         _WindSpeed ("Wind Speed", Range(0, 1)) = 0.1
         _MaxWindDistance ("Max Wind Distance", Vector) = (1,1,1,0)
-        _WindScale ("Wind Scale", Range(0, 1)) = 0.1
+        _WindScale ("Wind Scale", Range(0, .15)) = 0.1
         _Clip ("Alpha Clip", Range(0, 1)) = 1
 	}
 	SubShader {
@@ -38,6 +38,7 @@
 		uniform half _WindSpeed;
         uniform half4 _MaxWindDistance;
         uniform half _WindScale;
+       	uniform half _LightTransmission;
         half _Clip;
 
         float3 GetWind( float3 position)

@@ -17,7 +17,6 @@ public class FireLight : MonoBehaviour
 		lightComponent = GetComponent<Light>();
 		if (EffectsManager.Instance.displayFireLights)
 		{
-			lightComponent.enabled = true;
 			InvokeRepeating("UpdateLight", 0f, updateInterval);
 		}
 		else
@@ -33,5 +32,7 @@ public class FireLight : MonoBehaviour
 		float particlesModifier = particleCountModifier.GetValue(particles.particleCount);
 		lightComponent.range = range * particlesModifier;
 		lightComponent.intensity = intensity * particlesModifier;
+
+		lightComponent.enabled = lightComponent.intensity > 0.01f;
 	}
 }

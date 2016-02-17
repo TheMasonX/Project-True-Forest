@@ -5,16 +5,17 @@ using TMX.Utils;
 [System.Serializable]
 public class ProceduralTerrainSettings
 {
-	public int seed;
+	[HideInInspector] public int seed;
 	[HideInInspector] public bool useSeed;
 	public int heightmapResolution;
-	public float roughness;
-	public AnimationCurve initialHeightCurve;
 	public float[,] heightmap;
 
-	public CoherentNoise noiseSettings;
-//	public FlattenPeaks[] flattenPeaksPasses;
+	public PassSettingsAndActive[] largeScaleNoisePasses;
+	public FlattenPeaks[] flattenPeaksPasses;
 	public SmoothArray[] smoothingPasses;
+	public PassSettingsAndActive finalDetailPass;
+
+	public bool cubicInterpolation = true;
 
 	private Vector3 mapSize;
 
@@ -33,23 +34,38 @@ public class ProceduralTerrainSettings
 		}
 
 		heightmap = new float[heightmapResolution,heightmapResolution];
-		noiseSettings.Generate(ref heightmap, mapSize.y, seed);
 
-//		heightmap = DiamondSquare.DiamondSquareGrid(heightmapResolution, seed, 5f, mapSize.y, roughness, initialHeightCurve);
-//		for (int i = 0; i < flattenPeaksPasses.Length; i++)
-//		{
-//			if (flattenPeaksPasses[i].filterRadius > 0)
-//			{
-//				heightmap = flattenPeaksPasses[i].Flatten(heightmap, mapSize.x / (float)heightmapResolution, mapSize.z / (float)heightmapResolution);
-//			}
-//		}
+		//first the main features
+		for (int i = 0; i < largeScaleNoisePasses.Length; i++)
+		{
+			if (largeScaleNoisePasses[i].isActive)
+			{
+				largeScaleNoisePasses[i].noiseSettings.ModifyGrid(ref heightmap, mapSize.y, seed);
+			}
+		}
 
+		//flatten any peaks
+		for (int i = 0; i < flattenPeaksPasses.Length; i++)
+		{
+			if (flattenPeaksPasses[i].filterRadius > 0)
+			{
+				heightmap = flattenPeaksPasses[i].Flatten(heightmap, mapSize.x / (float)heightmapResolution, mapSize.z / (float)heightmapResolution);
+			}
+		}
+
+		//do a final smoothing
 		for (int i = 0; i < smoothingPasses.Length; i++)
 		{
 			if (smoothingPasses[i].filterRadius > 0)
 			{
 				heightmap = smoothingPasses[i].SmoothGrid(heightmap);
 			}
+		}
+
+		//prepare the normalmap-like final pass for use when interpolating
+		if(finalDetailPass.isActive)
+		{
+			finalDetailPass.noiseSettings.InstantiatePassType(seed);
 		}
 	}
 
@@ -85,6 +101,12 @@ public class ProceduralTerrainSettings
 
 		Vector2 interpolationPercents = floatPixelPoint - topLeftPixelPoint;
 
+		if (cubicInterpolation)
+		{
+			interpolationPercents.x = CustomMathf.Hermite(interpolationPercents.x);
+			interpolationPercents.y = CustomMathf.Hermite(interpolationPercents.y);
+		}
+
 		Vector4 interpolatedValues = new Vector4 ((1f - interpolationPercents.x) * (1f - interpolationPercents.y),
 			(interpolationPercents.x) * (1f - interpolationPercents.y),
 			(1f - interpolationPercents.x) * (interpolationPercents.y),
@@ -95,6 +117,11 @@ public class ProceduralTerrainSettings
 
 		output += SampleArray(bottomLeftPixelPoint) * interpolatedValues.z;
 		output += SampleArray(bottomRightPixelPoint) * interpolatedValues.w;
+
+		if (finalDetailPass.isActive)
+		{
+			output += finalDetailPass.noiseSettings.GetNoiseValue(uvPosition.x, uvPosition.y, 1f);
+		}
 
 		return output;
 	}

@@ -14,11 +14,15 @@ public class TerrainGenerator : MonoBehaviour
 	[Range(0f, .25f)]
 	public float borderPadding = .05f;
 
-	public TerrainWallGenerator wallSettings;
-
 	public ProceduralTerrainSettings proceduralTerrainSettings;
 
+	public TerrainWallGenerator wallSettings;
+
+	public FlowMapGenerator flowMapSettings;
+
 	public Material terrainMaterial;
+	public Shader defaultTerrainShader;
+	public Shader rainyTerrainShader;
 	private GameObject terrainObject;
 	public int terrainLayer = 8;
 
@@ -120,7 +124,8 @@ public class TerrainGenerator : MonoBehaviour
 
 		wallSettings.GenerateInitialWalls(terrainObject.transform, mesh.vertices, gridSize, mapSize);
 
-		Invoke("UpdateMaterial",0f);
+		UpdateMaterial();
+		Invoke("GenerateFlowMap", .01f);
 	}
 
 	Vector3 SetVertex (int x, int y, Vector3 offset, Vector2 uv)
@@ -146,5 +151,21 @@ public class TerrainGenerator : MonoBehaviour
 	public void AddBurntTexture (Texture2D burntTexture)
 	{
 		terrainMaterial.SetTexture("_BurntTexture", burntTexture);
+	}
+		
+	public void GenerateFlowMap ()
+	{
+		flowMapSettings.GenerateFlowMap();
+	}
+
+	public void ChangeTerrainShaderToRainy ()
+	{
+		terrainMaterial.shader = rainyTerrainShader;
+		terrainMaterial.SetTexture("_WaterFlowMap", flowMapSettings.flowMap);
+	}
+
+	public void ChangeTerrainShaderToDefault ()
+	{
+		terrainMaterial.shader = defaultTerrainShader;
 	}
 }

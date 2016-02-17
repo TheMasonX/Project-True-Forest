@@ -11,7 +11,7 @@ public class FireCell
 	public float totalArea;
 	public float fuelRemaining;
 	public float burnStartTime;
-	public FireParticles groundParticles;
+	public FireParticleEffect groundParticles;
 
 	public bool activated;
 
@@ -27,13 +27,15 @@ public class FireCell
 		adjacentCells = new List<Vector2Int>();
 	}
 
-	public void Initialize (Vector3 cellExtents, Curve fuelFromCellDensity)
+	public void InitializeFuelInfo (Vector3 cellExtents, Curve fuelFromCellDensity)
 	{
 		foliageObjects = new List<FoliageObject>();
 		Collider[] nearbyObjects = Physics.OverlapBox(centerPoint, cellExtents, Quaternion.Euler(Vector3.zero), ForestController.Instance.objectLayerMask);
 		for (int i = 0; i < nearbyObjects.Length; i++)
 		{
 			var foliageObject = nearbyObjects[i].transform.GetComponentInParent<FoliageObject>();
+
+			//is the object a non-flammable object such as a rock?
 			if (!foliageObject)
 			{
 				continue;

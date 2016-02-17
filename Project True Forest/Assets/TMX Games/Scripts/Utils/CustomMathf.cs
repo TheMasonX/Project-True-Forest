@@ -111,7 +111,7 @@ namespace TMX.Utils
 
 		public static int GetRandomSeed ()
 		{
-			return (int)System.DateTime.Now.Ticks;
+			return System.DateTime.Now.Millisecond + System.DateTime.Now.Second * 1000;
 		}
 
 		private static System.Random rng = new System.Random();  
@@ -148,7 +148,7 @@ namespace TMX.Utils
 
 		public static void NewGaussSeed ()
 		{
-			NewGaussSeed(System.DateTime.Now.Millisecond);
+			NewGaussSeed(GetRandomSeed());
 		}
 
 		public static void NewGaussSeed (int seed)
@@ -179,6 +179,16 @@ namespace TMX.Utils
 				total += values[i];
 			}
 			return total / values.Length;
+		}
+
+		public static float TicksToSeconds (long ticks)
+		{
+			return ((float)ticks / 10000000f);
+		}
+
+		public static long SecondsToTicks (float seconds)
+		{
+			return (long)(seconds * 10000000);
 		}
 	}
 

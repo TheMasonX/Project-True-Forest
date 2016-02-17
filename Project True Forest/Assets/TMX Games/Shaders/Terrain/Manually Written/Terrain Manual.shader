@@ -9,14 +9,12 @@
 
 		_Strata ("Cliff Strata", 2D) = "white" {}
 		_DiffuseNoise ("Diffuse Noise", 2D) = "white" {}
-		_DiffuseNoiseScale ("Diffuse Noise Scale", Range(0,30)) = 10
+		_DiffuseNoiseScale ("Diffuse Noise Scale", Range(0,60)) = 20
 		
 		_BurntTexture ("Burnt Texture", 2D) = "black" {}
 		_Scorched ("Scorched", 2D) = "white" {}
 		_ScorchedNormal ("Scorched Normal", 2D) = "white" {}
 		_ScorchedScale ("Scorched Scale", Range(0, 40)) = 10
-
-		_SlopePatchinessNoise ("Slope Patchiness Noise", 2D) = "white" {}
 
 		_Scale ("TPM Scale", Range(0,25)) = 10
 		_StrataVScale ("Strata Vertical Scale", Range(0,1)) = 1
@@ -61,13 +59,10 @@
 
 		float _StrataVScale;
 		float _StrataHScale;
-
-		sampler2D _SlopePatchinessNoise;
 		
 		struct Input
 		{
 			float2 uv_BurntTexture;
-			float2 uv_SlopePatchinessNoise;
 			float3 worldPos;
 			float3 uneditedNormal;
 			float3 worldNormal; INTERNAL_DATA
@@ -170,12 +165,12 @@
 
 		void surf (Input IN, inout SurfaceOutputStandard o)
 		{			
-			float3 patchiness = tex2D(_SlopePatchinessNoise, IN.uv_SlopePatchinessNoise);
 			float slope = acos(dot(IN.uneditedNormal, float3(0,1,0))) * 57.2958;
-			float slopePercent = (clamp(slope, _BlendingSettings.z, _BlendingSettings.w) - _BlendingSettings.z) / (_BlendingSettings.w - _BlendingSettings.z) * patchiness.r;
-			slopePercent = 1 - (1 - slopePercent) * (1 - slopePercent) * (1 - slopePercent);
+			float slopePercent = (clamp(slope, _BlendingSettings.z, _BlendingSettings.w) - _BlendingSettings.z) / (_BlendingSettings.w - _BlendingSettings.z);
+			slopePercent = 1 - (1 - slopePercent) * (1 - slopePercent);
+			slopePercent = slopePercent * slopePercent * (3.0 - 2.0 * slopePercent);
 
-			float heightPercent = IN.worldPos.y / _MapSize.y * patchiness.g;
+			float heightPercent = IN.worldPos.y / _MapSize.y;
 			heightPercent = (clamp(heightPercent, _BlendingSettings.x, _BlendingSettings.y) - _BlendingSettings.x) / (_BlendingSettings.y - _BlendingSettings.x);
 
 			heightPercent *= heightPercent * (3 - 2 * heightPercent);

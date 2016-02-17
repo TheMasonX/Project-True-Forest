@@ -7,12 +7,9 @@ public class ForestController : MonoBehaviour
 {
 	public static ForestController Instance;
 
-	public Vector3 mapSize;
+	[HideInInspector] public Vector3 mapSize;
 
-	public float yearLength = 120f;
-	public float ageUpdateInterval = 10f;
-	public float scaleUpdateInterval = 0.25f;
-	public float scoreUpdateInterval = 10f;
+	public float scoreUpdateInterval = 5f;
 
 
 	public bool reproduceAnnually = true;
@@ -27,7 +24,6 @@ public class ForestController : MonoBehaviour
 	public LayerMask objectLayerMask;
 	public Curve initialAgeDistribution;
 	private Transform forestContainer;
-	public int currentYear;
 	public DensityMetric densityMetric;
 
 	private void Awake()
@@ -90,7 +86,7 @@ public class ForestController : MonoBehaviour
 			TerrainObjectType foliageObjectSettings = foliageTypes[foliageObjectType];
 			terrainObjectContainers[foliageObjectType] = new GameObject(foliageObjectSettings.name + " Container").transform;
 			terrainObjectContainers[foliageObjectType].parent = forestContainer;
-			foliageObjectSettings.Initialize(terrainLayerMask, objectLayerMask, terrainObjectContainers[foliageObjectType], yearLength);
+			foliageObjectSettings.Initialize(terrainLayerMask, objectLayerMask, terrainObjectContainers[foliageObjectType], LevelController.Instance.yearLength);
 			foreach (Vector2 sample in new PoissonDiscSampler((int)mapSize.x, (int)mapSize.z, foliageObjectSettings.initialSpawnSampleRadius, foliageObjectSettings.poissonClusterRange, seed).Samples())
 			{
 				Vector3 position = new Vector3(sample.x + sampleOffset.x, maxTerrainHeight + 5f, sample.y + sampleOffset.x);
@@ -98,8 +94,11 @@ public class ForestController : MonoBehaviour
 			}
 		}
 
-		InvokeRepeating("UpdateScores", 1f, scoreUpdateInterval);
-//		InvokeRepeating("NewYear", 0.0f, yearLength);
+		InvokeRepeating("UpdateScores", .1f, scoreUpdateInterval);
+		if (reproduceAnnually)
+		{
+			InvokeRepeating("NewYear", 0.0f, LevelController.Instance.yearLength);
+		}
 	}
 
 	public void AttemptSpawn (Vector3 samplePoint, TerrainObjectType terrainObjectSettings, bool randomAge, bool checkSurroundings)
@@ -111,7 +110,7 @@ public class ForestController : MonoBehaviour
 		}
 
 		float viabilityPercentage = CustomMathf.RemapValue(viability, terrainObjectSettings.viabilitySettings.minViability, 1f, true);
-		float num = !randomAge ? 0.0f : initialAgeDistribution.GetValue(Random.value) * terrainObjectSettings.dna.lifetime.minOutputValue * yearLength;
+		float num = !randomAge ? 0.0f : initialAgeDistribution.GetValue(Random.value) * terrainObjectSettings.dna.lifetime.minOutputValue * LevelController.Instance.yearLength;
 		var newObject = terrainObjectSettings.SpawnFoliageObject(samplePoint, Time.time - num, viabilityPercentage, reproduceAnnually);
 		if (newObject.GetType() == typeof(FoliageObject))
 		{
@@ -125,7 +124,6 @@ public class ForestController : MonoBehaviour
 
 	public void NewYear()
 	{
-		currentYear++;
 		StartCoroutine(AnnualReproduction());
 	}
 		

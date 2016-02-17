@@ -104,12 +104,16 @@ public class NoiseCreator : EditorWindow
 
     void OnEnable()
     {
-        tempShaderLocation = Application.dataPath + "/Turbulence-Library/Resources/shader.template";
+        tempShaderLocation = Application.dataPath + "/Imported/Turbulence-Library/Resources/shader.template";
         tempShader = File.ReadAllText(tempShaderLocation);
     }
 
     void OnGUI()
     {
+		shaderName = EditorGUILayout.TextField("Shader Name: ", shaderName);
+
+		EditorGUILayout.Space();
+
         selectedDimension = EditorGUILayout.IntPopup("Dimension: ", selectedDimension, dimensionNames, dimensionSizes);
 
         EditorGUILayout.Space();
@@ -228,14 +232,6 @@ public class NoiseCreator : EditorWindow
 
         ClearProperties();
     }
-
-	string GetShaderName ()
-	{
-		string newName = "";
-		string propertiesAddition = "";
-
-		return newName;
-	}
 
     #region Shader
     void AssignShaderStrings2D()
@@ -385,6 +381,7 @@ public class NoiseCreator : EditorWindow
             shaderTags = NoiseStrings2D.TagsTransparent;
             shaderBlending = NoiseStrings2D.BlendingAlpha;
             shaderAlpha = NoiseStrings2D.AlphaOn;
+			shaderLighting += " alpha";
             shaderProperties += NoiseStrings2D.PropertiesTransparency;
             shaderUniforms += NoiseStrings2D.UniformsTransparency;
         }
@@ -584,6 +581,7 @@ public class NoiseCreator : EditorWindow
             shaderTags = NoiseStrings3D.TagsTransparent;
             shaderBlending = NoiseStrings3D.BlendingAlpha;
             shaderAlpha = NoiseStrings3D.AlphaOn;
+			shaderLighting += " alpha";
             shaderProperties += NoiseStrings3D.PropertiesTransparency;
             shaderUniforms += NoiseStrings3D.UniformsTransparency;
         }
